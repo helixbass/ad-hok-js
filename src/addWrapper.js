@@ -2,16 +2,14 @@ import React from 'react'
 
 const markerPropertyName = '__ad-hok-addWrapper'
 
-export const isAddWrapper = (func) =>
-  func[markerPropertyName]
+export const isAddWrapper = func => func[markerPropertyName]
 
-export default (callback) => {
-  const ret = (Component) => (props) =>
+export default callback => {
+  const ret = Component => props =>
     callback({
       props,
-      render: (additionalProps) =>
-        <Component {...props} {...additionalProps} />
+      render: additionalProps => <Component {...props} {...additionalProps} />,
     })
-  ret[markerPropertyName] = yes
+  ret[markerPropertyName] = true
   return ret
 }

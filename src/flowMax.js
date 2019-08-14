@@ -8,25 +8,20 @@ import {isAddDisplayName} from './addDisplayName'
 
 const getArgumentsPropertyName = '__ad-hok-flowMax-getArguments'
 
-const isFlowMax = (func) =>
-  func[getArgumentsPropertyName]
+const isFlowMax = func => func[getArgumentsPropertyName]
 
 const flowMax = (...funcs) => {
-  const getPrecedingFuncs = (index) =>
-    index === 0 ?
-      []
-    :
-      funcs.slice(0,index)
-  const getFollowingFuncs = (index) =>
-    funcs.slice(index + 1)
-  const flowLength = funcs && funcs.length || 0
+  const getPrecedingFuncs = index => (index === 0 ? [] : funcs.slice(0, index))
+  const getFollowingFuncs = index => funcs.slice(index + 1)
+  const flowLength = (funcs && funcs.length) || 0
   let displayName = null
-  const wrapExistingDisplayName = (wrapperStr) =>
-    `${wrapperStr}(`{displayName != null ? displayName : ''})`
+  const wrapExistingDisplayName = wrapperStr =>
+    `${wrapperStr}(${displayName != null ? displayName : ''})`
   if (flowLength) {
-  for (let funcIndex = 0; funcIndex < funcs.length; funcIndex++) {
-    const func = funcs[funcIndex]
-      if (getNestedFlowMaxArguments = isFlowMax(func))
+    for (let funcIndex = 0; funcIndex < funcs.length; funcIndex++) {
+      const func = funcs[funcIndex]
+      const getNestedFlowMaxArguments = isFlowMax(func)
+      if (getNestedFlowMaxArguments)
         return flowMax(
           ...getPrecedingFuncs(funcIndex),
           ...getNestedFlowMaxArguments(),
@@ -43,14 +38,14 @@ const flowMax = (...funcs) => {
           newFollowingFlowMax.displayName == null ||
           newFollowingFlowMax.displayName === 'ret'
         )
-          newFollowingFlowMax.displayName =
-              isAddPropTypes(func) ?
-                wrapExistingDisplayName('addPropTypes')
-                :
-              isAddWrapper(func) ? wrapExistingDisplayName('addWrapper')
-              : isAddWrapperHOC(func) ?
-                wrapExistingDisplayName('addWrapperHOC') : undefined
-        newFlowMax = flowMax(
+          newFollowingFlowMax.displayName = isAddPropTypes(func)
+            ? wrapExistingDisplayName('addPropTypes')
+            : isAddWrapper(func)
+            ? wrapExistingDisplayName('addWrapper')
+            : isAddWrapperHOC(func)
+            ? wrapExistingDisplayName('addWrapperHOC')
+            : undefined
+        const newFlowMax = flowMax(
           ...getPrecedingFuncs(funcIndex),
           func(newFollowingFlowMax)
         )
@@ -58,33 +53,26 @@ const flowMax = (...funcs) => {
         newFlowMax[getArgumentsPropertyName] = () => funcs
         return newFlowMax
       }
-      if (addedDisplayName = isAddDisplayName(func))
-        displayName = addedDisplayName[0]
-  }
+      const addedDisplayName = isAddDisplayName(func)
+      if (addedDisplayName) displayName = addedDisplayName[0]
+    }
   }
   const ret = (...args) => {
-    if (!(funcs && funcs.length))
-      return args[0]
-    const index = 0
-    const props = null
+    if (!(funcs && funcs.length)) return args[0]
+    let index = 0
+    let props = null
     while (index < flowLength) {
-     let func = funcs[index]
-      currentArgs =
-        index === 0 ?
-          args
-        :
-          [props]
+      const func = funcs[index]
+      const currentArgs = index === 0 ? args : [props]
       props = func(...currentArgs)
-      if (isRenderNothing(props))
-        return null
-      if (returnsVal = isReturns(props))
-        return returnsVal[0]
+      if (isRenderNothing(props)) return null
+      const returnsVal = isReturns(props)
+      if (returnsVal) return returnsVal[0]
       index++
     }
-    props
+    return props
   }
-  if (displayName != null)
-    ret.displayName = displayName
+  if (displayName != null) ret.displayName = displayName
   ret[getArgumentsPropertyName] = () => funcs
   return ret
 }

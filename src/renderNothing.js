@@ -1,7 +1,5 @@
 const nonce = {}
 
-export const isRenderNothing = (val) =>
-  val === nonce
+export const isRenderNothing = val => val === nonce
 
-export default () => () =>
-  nonce
+export default () => () => nonce

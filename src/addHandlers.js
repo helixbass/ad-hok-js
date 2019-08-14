@@ -1,28 +1,24 @@
 import {mapValues} from 'lodash/fp'
 import {useMemo} from 'react'
 
-const addHandlers = (handlers, dependencyNames) =>
-  (props) => {
-    const createHandlerProps = () =>
-      mapValues((createHandler) =>
-        (...args) => {
-          handler = createHandler(props)
-          return handler(...args)
-        }
-      )(handlers)
+const addHandlers = (handlers, dependencyNames) => props => {
+  const createHandlerProps = () =>
+    mapValues(createHandler => (...args) => {
+      const handler = createHandler(props)
+      return handler(...args)
+    })(handlers)
 
-    handlerProps = dependencyNames ?
-      useMemo(
+  const handlerProps = dependencyNames
+    ? useMemo(
         createHandlerProps,
         dependencyNames.map(dependencyName => props[dependencyName])
       )
-    :
-      createHandlerProps()
+    : createHandlerProps()
 
-    return {
-      ...props
-      ...handlerProps
-    }
+  return {
+    ...props,
+    ...handlerProps,
   }
+}
 
 export default addHandlers

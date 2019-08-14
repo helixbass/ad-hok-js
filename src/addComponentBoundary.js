@@ -1,4 +1,3 @@
 import addWrapper from './addWrapper'
 
-export default () =>
-  addWrapper(({render}) => render())
+export default () => addWrapper(({render}) => render())

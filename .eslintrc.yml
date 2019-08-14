@@ -1,0 +1,23 @@
+parser: babel-eslint
+plugins:
+  - known-imports
+  - prettier
+  - react
+extends:
+  - eslint:recommended
+  - plugin:react/recommended
+  - plugin:known-imports/recommended-react
+rules:
+  known-imports/no-unused-vars: [error, {varsIgnorePattern: ^_+$}]
+  prefer-rest-params: error
+  # no-else-return: error
+  # id-length: error
+  # no-multi-assign: error
+  no-self-compare: error
+  prettier/prettier: error
+  react/display-name: off
+env:
+  node: true
+  es6: true
+  jest: true
+  browser: true
