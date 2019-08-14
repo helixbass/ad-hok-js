@@ -4,9 +4,10 @@
   "description": "Recompose-style React hooks",
   "main": "lib/index.js",
   "scripts": {
-    "watch": "coffee -o lib/__tests__/ -wc src/__tests__/",
+    "build": "babel src/ --out-dir lib",
+    "prepublish": "npm run build",
     "lint": "eslint 'src/**/*.js'",
-    "test": "jest"
+    "test": "jest src/"
   },
   "files": [
     "lib"
@@ -30,23 +31,21 @@
     "react": "^16.8.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.5.5",
     "@babel/core": "^7.1.2",
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-react": "^7.0.0",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.2",
     "babel-jest": "^23.6.0",
-    "coffeescript": "github:helixbass/coffeescript#811b4ba4",
     "eslint": "^5.8.0",
     "eslint-config-prettier": "^3.1.0",
-    "eslint-plugin-coffee": "^0.0.11",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-known-imports": "^0.0.10",
     "eslint-plugin-prettier": "^3.0.0",
     "jest": "^23.6.0",
     "jest-dom": "^2.1.0",
-    "prettier": "github:helixbass/prettier#9105f5f1",
-    "prettier-plugin-coffeescript": "^0.0.9",
+    "prettier": "^1.18.2",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
