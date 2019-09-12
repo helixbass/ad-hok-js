@@ -7,7 +7,29 @@ Ad-hok is a set of helpers that let you use React [hooks](https://reactjs.org/do
 ## Installation
 
 ```
-$ npm install ad-hok
+$ npm install --save ad-hok
+```
+
+##### Recommended: ESLint
+
+If you're using [ESLint](https://eslint.org), you may want to install [`eslint-plugin-ad-hok`](https://github.com/helixbass/eslint-plugin-ad-hok) to enforce `ad-hok` best practices
+```
+$ npm install --save-dev eslint-plugin-ad-hok
+```
+In your `.eslintrc`:
+```
+"extends": ["plugin:ad-hok/recommended"]
+```
+
+##### Recommended: Babel display name plugin
+
+If you're using [Babel](https://babeljs.io), you may want to install [`babel-plugin-transform-react-display-name-pipe`](https://github.com/helixbass/babel-plugin-transform-react-display-name-pipe) for nicer component display names when debugging
+```
+$ npm install --save-dev babel-plugin-transform-react-display-name-pipe
+```
+In your `.babelrc` (or `babel.config.js`):
+```
+"plugins": ["transform-react-display-name-pipe"]
 ```
 
 ## Basic usage
@@ -73,6 +95,7 @@ If you use [ESLint](https://github.com/eslint/eslint), you can use [`eslint-plug
 
 * [addState()](#addstate)
 * [addEffect()](#addeffect)
+* [addLayoutEffect()](#addlayouteffect)
 * [addProps()](#addprops)
 * [addPropsOnChange()](#addpropsonchange)
 * [addHandlers()](#addhandlers)
@@ -143,6 +166,42 @@ const Example = flow(
     console.log("I get called on every re-render")
   }),
   addEffect(() => () => {
+    console.log("I only get called once on mount")
+  }, []),
+  ({count, setCount}) =>
+    <>
+      Count: {count}
+      <button onClick={() => setCount(0)}>Reset</button>
+      <button onClick={() => setCount(prevCount => prevCount + 1)}>+</button>
+    </>
+)
+```
+
+### `addLayoutEffect()`
+
+```js
+addLayoutEffect(
+  callback: (props: Object) => Function,
+  dependencies?: Array<string>
+): Function
+```
+
+Accepts a function of props that returns a function (which gets passed to [`useLayoutEffect()`](https://reactjs.org/docs/hooks-reference.html#uselayouteffect)). Used for imperative, possibly effectful code. The signature is identical to `addEffect`, but it fires synchronously after all DOM mutations
+
+The optional second argument is an array of names of props that the effect depends on. It corresponds to the [second argument to `useLayoutEffect()`](https://reactjs.org/docs/hooks-reference.html#conditionally-firing-an-effect)
+
+For example:
+
+```js
+const Example = flow(
+  addState('count', 'setCount', 0),
+  addLayoutEffect(({count}) => () => {
+    document.title = `You clicked ${count} times`
+  }, ['count']),
+  addLayoutEffect(() => () => {
+    console.log("I get called on every re-render")
+  }),
+  addLayoutEffect(() => () => {
     console.log("I only get called once on mount")
   }, []),
   ({count, setCount}) =>
@@ -270,7 +329,7 @@ const Fetcher = flow(
 
 ```js
 addStateHandlers(
-  initialState: Object | (props: Object) => any
+  initialState: Object | (props: Object) => Object
   stateUpdaters: {
     [key: string]: (state: Object, props: Object) => (...payload: any[]) => Object
   },
