@@ -1,15 +1,14 @@
-import {isFunction} from 'lodash'
-import {useMemo} from 'react'
+import {isFunction} from './util/helpers'
+import useComputedFromDependencies from './util/useComputedFromDependencies'
 
-const addProps = (updater, dependencyNames) => props => {
+const addProps = (updater, dependencies) => props => {
   const getAddedProps = () => (isFunction(updater) ? updater(props) : updater)
 
-  const addedProps = dependencyNames
-    ? useMemo(
-        getAddedProps,
-        dependencyNames.map(dependencyName => props[dependencyName])
-      )
-    : getAddedProps()
+  const addedProps = useComputedFromDependencies({
+    compute: getAddedProps,
+    dependencies,
+    props,
+  })
 
   return {
     ...props,

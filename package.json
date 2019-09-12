@@ -1,6 +1,6 @@
 {
   "name": "ad-hok",
-  "version": "0.0.27",
+  "version": "0.0.29",
   "description": "Recompose-style React hooks",
   "main": "lib/index.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "url": "git@github.com:helixbass/ad-hok-js.git"
   },
   "peerDependencies": {
-    "react": "^16.8.0"
+    "react": ">=16.8.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -45,6 +45,7 @@
     "eslint-plugin-prettier": "^3.0.0",
     "jest": "^23.6.0",
     "jest-dom": "^2.1.0",
+    "lodash": "^4.17.15",
     "prettier": "^1.18.2",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
@@ -52,7 +53,5 @@
     "react-testing-library": "^5.2.3",
     "regenerator-runtime": "^0.12.1"
   },
-  "dependencies": {
-    "lodash": "^4.17.11"
-  }
+  "dependencies": {}
 }

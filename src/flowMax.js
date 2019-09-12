@@ -5,6 +5,7 @@ import {isAddWrapper} from './addWrapper'
 import {isAddWrapperHOC} from './addWrapperHOC'
 import {isBranch} from './branch-avoid-circular-dependency'
 import {isAddDisplayName} from './addDisplayName'
+import {isFunction} from './util/helpers'
 
 const getArgumentsPropertyName = '__ad-hok-flowMax-getArguments'
 
@@ -55,6 +56,7 @@ const flowMax = (...funcs) => {
       }
       const addedDisplayName = isAddDisplayName(func)
       if (addedDisplayName) displayName = addedDisplayName[0]
+      if (!isFunction(func)) throw new TypeError('Expected a function')
     }
   }
   const ret = (...args) => {
