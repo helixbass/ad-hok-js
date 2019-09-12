@@ -85,19 +85,25 @@ const EmptyDeps = flow(
   )
 )
 
-const EmptyPure = React.memo(({onClick}) => {
+const EmptyPure = React.memo(({onClick, label = 'empty pure button'}) => {
   console.log('Pure rerendered')
   return (
     <div>
-      <button onClick={onClick}>empty pure button</button>
+      <button onClick={onClick}>{label}</button>
     </div>
   )
 })
 
 const PropDeps = flow(
-  addStateHandlers({x: 1}, {incrementXByY: ({x}, {y}) => () => ({x: x + y})}, [
-    'y',
-  ]),
+  addStateHandlers(
+    {
+      x: 1,
+    },
+    {
+      incrementXByY: ({x}, {y}) => () => ({x: x + y}),
+    },
+    ['y', 'user.id']
+  ),
   ({incrementXByY, x, testId}) => (
     <div>
       <PropPure onClick={incrementXByY} />
@@ -106,11 +112,29 @@ const PropDeps = flow(
   )
 )
 
-const PropPure = React.memo(({onClick}) => {
+const CallbackDeps = flow(
+  addStateHandlers(
+    {
+      x: 1,
+    },
+    {
+      incrementXByY: ({x}, {y}) => () => ({x: x + y}),
+    },
+    (prevProps, props) => prevProps.y < props.y
+  ),
+  ({incrementXByY, x, testId}) => (
+    <div>
+      <PropPure onClick={incrementXByY} label="prop pure CallbackDeps" />
+      <div data-testid={testId}>{x}</div>
+    </div>
+  )
+)
+
+const PropPure = React.memo(({onClick, label = 'prop pure button'}) => {
   console.log('PropPure rerendered')
   return (
     <div>
-      <button onClick={onClick}>prop pure button</button>
+      <button onClick={onClick}>{label}</button>
     </div>
   )
 })
@@ -170,17 +194,51 @@ describe('addStateHandlers', () => {
 
     const testId = 'prop-deps'
     const {rerender, getByText, getByTestId} = render(
-      <PropDeps y={1} testId={testId} />
+      <PropDeps y={1} testId={testId} user={{id: 3}} />
     )
     expect(console.log).toHaveBeenCalledTimes(1)
     console.log.mockClear()
     expect(getByTestId(testId)).toHaveTextContent('1')
 
-    rerender(<PropDeps y={2} testId={testId} />)
+    rerender(<PropDeps y={2} testId={testId} user={{id: 3}} />)
+    expect(console.log).toHaveBeenCalledTimes(1)
+    console.log.mockClear()
+
+    rerender(<PropDeps y={2} testId={testId} user={{id: 3}} />)
+    expect(console.log).not.toHaveBeenCalled()
+
+    rerender(<PropDeps y={2} testId={testId} user={{id: 4}} />)
     expect(console.log).toHaveBeenCalledTimes(1)
     console.log.mockClear()
 
     fireEvent.click(getByText(/prop pure button/))
+    expect(console.log).toHaveBeenCalledTimes(1)
+    console.log.mockClear()
+    expect(getByTestId(testId)).toHaveTextContent('3')
+  })
+
+  test('allows specifying dependencies as callback', () => {
+    jest.spyOn(console, 'log').mockImplementation(() => {})
+
+    const testId = 'callback-deps'
+    const {rerender, getByText, getByTestId} = render(
+      <CallbackDeps y={1} testId={testId} />
+    )
+    expect(console.log).toHaveBeenCalledTimes(1)
+    console.log.mockClear()
+    expect(getByTestId(testId)).toHaveTextContent('1')
+
+    rerender(<CallbackDeps y={1} testId={testId} />)
+    expect(console.log).not.toHaveBeenCalled()
+
+    rerender(<CallbackDeps y={0} testId={testId} />)
+    expect(console.log).not.toHaveBeenCalled()
+
+    rerender(<CallbackDeps y={2} testId={testId} />)
+    expect(console.log).toHaveBeenCalledTimes(1)
+    console.log.mockClear()
+
+    fireEvent.click(getByText(/prop pure CallbackDeps/))
     expect(console.log).toHaveBeenCalledTimes(1)
     console.log.mockClear()
     expect(getByTestId(testId)).toHaveTextContent('3')

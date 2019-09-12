@@ -3,7 +3,7 @@ import {render, waitForElement} from 'react-testing-library'
 import 'jest-dom/extend-expect'
 import {flow} from 'lodash/fp'
 
-import {addState, addEffect} from '..'
+import {addState, addLayoutEffect} from '..'
 
 // eslint-disable-next-line react/prop-types
 const DisplayComp = ({x}) => (
@@ -14,7 +14,7 @@ const DisplayComp = ({x}) => (
 
 const Comp = flow(
   addState('x', 'setX', 'aaa'),
-  addEffect(({setX}) => () => {
+  addLayoutEffect(({setX}) => () => {
     // axios.get.mockResolvedValueOnce data: greeting: 'ddd'
     // {data: {greeting}} = await axios.get 'SOME_URL'
     setX('ddd')
@@ -24,7 +24,7 @@ const Comp = flow(
 
 const Comp2 = flow(
   addState('x', 'setX', 0),
-  addEffect(
+  addLayoutEffect(
     ({x, setX}) => () => {
       setX(x + 1)
     },
@@ -35,7 +35,7 @@ const Comp2 = flow(
 
 const Comp3 = flow(
   addState('x', 'setX', 0),
-  addEffect(
+  addLayoutEffect(
     ({x, setX}) => () => {
       setX(x + 1)
     },
@@ -46,7 +46,7 @@ const Comp3 = flow(
 
 const PathDependency = flow(
   addState('x', 'setX', 0),
-  addEffect(
+  addLayoutEffect(
     ({x, setX}) => () => {
       setX(x + 1)
     },
@@ -57,7 +57,7 @@ const PathDependency = flow(
 
 const Comp4 = flow(
   addState('x', 'setX', 0),
-  addEffect(
+  addLayoutEffect(
     ({x, setX}) => () => {
       setX(x + 1)
     },
@@ -66,7 +66,7 @@ const Comp4 = flow(
   ({x, testId}) => <div data-testid={testId}>{x}</div>
 )
 
-describe('addEffect', () => {
+describe('addLayoutEffect', () => {
   test('fires', async () => {
     const {getByText, rerender} = render(<Comp />)
     rerender(<Comp />)
@@ -74,7 +74,7 @@ describe('addEffect', () => {
     expect(updatedEl).toHaveTextContent('ddd')
   })
 
-  test('passes changed-props arg to useEffect()', () => {
+  test('passes changed-props arg to useLayoutEffect()', () => {
     const testId = 'comp2'
     const {rerender, getByTestId} = render(<Comp2 testId={testId} />)
     expect(getByTestId(testId)).toHaveTextContent('1')

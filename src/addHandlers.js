@@ -1,19 +1,18 @@
-import {mapValues} from 'lodash/fp'
-import {useMemo} from 'react'
+import {mapValues} from './util/helpers'
+import useComputedFromDependencies from './util/useComputedFromDependencies'
 
-const addHandlers = (handlers, dependencyNames) => props => {
+const addHandlers = (handlers, dependencies) => props => {
   const createHandlerProps = () =>
-    mapValues(createHandler => (...args) => {
+    mapValues(createHandler => {
       const handler = createHandler(props)
-      return handler(...args)
+      return (...args) => handler(...args)
     })(handlers)
 
-  const handlerProps = dependencyNames
-    ? useMemo(
-        createHandlerProps,
-        dependencyNames.map(dependencyName => props[dependencyName])
-      )
-    : createHandlerProps()
+  const handlerProps = useComputedFromDependencies({
+    compute: createHandlerProps,
+    dependencies,
+    props,
+  })
 
   return {
     ...props,

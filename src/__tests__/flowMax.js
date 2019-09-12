@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React from 'react'
 import {render, fireEvent} from 'react-testing-library'
 import 'jest-dom/extend-expect'
@@ -48,5 +49,11 @@ describe('flowMax', () => {
     expect(getByTestId('child-y')).toHaveTextContent('2')
     expect(getByTestId('child-d')).toHaveTextContent('4')
     expect(getByTestId('child-e')).toHaveTextContent('5')
+  })
+
+  test('throws nice error when passed a non-function', () => {
+    expect(() => {
+      flowMax({notA: 'function'})
+    }).toThrow(TypeError)
   })
 })
